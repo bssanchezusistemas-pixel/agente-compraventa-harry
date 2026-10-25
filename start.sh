@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright (c) 2026 Enrique Rocha (@soyenriquerocha)
+# SPDX-License-Identifier: MIT
+# id: er-22634c3d
 # AgentKit — Script de inicio
 # El usuario ejecuta: bash start.sh
 

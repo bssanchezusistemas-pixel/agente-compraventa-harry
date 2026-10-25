@@ -402,3 +402,10 @@ Construido con [Claude Code](https://claude.com/claude-code) para builders de LA
 ## Licencia
 
 MIT — Usa este proyecto como quieras, para lo que quieras.
+
+<!-- marca-agua:inicio -->
+
+---
+
+<sub>Hecho por **Enrique Rocha (@soyenriquerocha)** · [tododeia.com](https://www.tododeia.com)⁠​‌‌​​‌​‌​‌‌‌​​‌​​​‌​‌‌​‌​​‌‌​​‌​​​‌‌​​‌​​​‌‌​‌‌​​​‌‌​​‌‌​​‌‌​‌​​​‌‌​​​‌‌​​‌‌​​‌‌​‌‌​​‌​​⁠</sub>
+<!-- marca-agua:fin -->

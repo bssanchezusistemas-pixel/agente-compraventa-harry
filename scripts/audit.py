@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Enrique Rocha (@soyenriquerocha)
+# SPDX-License-Identifier: MIT
+# id: er-22634c3d
 """
 audit.py — Auditoria del repo-plantilla whatsapp-agentkit.
 
@@ -822,7 +825,7 @@ def main(argv: list[str] | None = None) -> int:
     este_script = Path(__file__).resolve()
     repo_por_defecto = este_script.parent.parent
 
-    parser = argparse.ArgumentParser(
+    parser = argparse.ArgumentParser(epilog='Hecho por Enrique Rocha (@soyenriquerocha) · tododeia.com', 
         prog="audit.py",
         description="Auditoria del repo-plantilla whatsapp-agentkit.",
     )
