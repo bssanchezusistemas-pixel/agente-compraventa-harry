@@ -84,7 +84,6 @@ class ProveedorZernio(ProveedorWhatsApp):
 
         evento = payload.get("event")
         if evento != "message.received":
-            # message.sent, message.delivered, message.read, etc. no se contestan
             logger.debug(f"Evento ignorado: {evento}")
             return []
 
@@ -92,27 +91,38 @@ class ProveedorZernio(ProveedorWhatsApp):
         if mensaje.get("platform") != "whatsapp":
             return []
 
+        # En Zernio el texto puede venir en 'message' o en 'text'
+        texto = mensaje.get("text") or mensaje.get("message") or ""
+
         remitente = mensaje.get("sender") or {}
-        # phoneNumber viene en E.164 con "+". Desde abril de 2026 puede faltar
-        # (los usuarios con username de WhatsApp no exponen su numero), asi que
-        # caemos al identificador que Meta si garantiza.
-        telefono = (remitente.get("phoneNumber") or "").lstrip("+")
+        # phoneNumber puede venir en senderPhoneNumber o sender.phoneNumber
+        telefono = (
+            mensaje.get("senderPhoneNumber")
+            or remitente.get("phoneNumber")
+            or ""
+        ).lstrip("+")
         if not telefono:
-            telefono = remitente.get("businessScopedUserId") or remitente.get("id") or ""
+            telefono = (
+                mensaje.get("senderId")
+                or remitente.get("businessScopedUserId")
+                or remitente.get("id")
+                or ""
+            )
 
         cuenta = payload.get("account") or {}
+        account_id = cuenta.get("id") or mensaje.get("accountId") or self.account_id
 
         return [
             MensajeEntrante(
                 telefono=telefono,
-                texto=mensaje.get("text") or "",
+                texto=texto,
                 mensaje_id=mensaje.get("platformMessageId") or mensaje.get("id") or "",
                 # Zernio marca la direccion: solo contestamos lo que entra
                 es_propio=mensaje.get("direction") != "incoming",
                 contexto={
-                    "evento_id": payload.get("id", ""),
+                    "evento_id": payload.get("id", "") or mensaje.get("id", ""),
                     "conversation_id": mensaje.get("conversationId", ""),
-                    "account_id": cuenta.get("id", ""),
+                    "account_id": account_id,
                 },
             )
         ]
