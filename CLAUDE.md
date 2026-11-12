@@ -33,7 +33,7 @@ Cuando generes el agente, SIEMPRE usa estas tecnologías:
 |-----------|-----------|-------|
 | Runtime | Python 3.11+ | Verificar en Fase 1 |
 | Servidor | FastAPI + Uvicorn | Webhook handler genérico |
-| IA | Anthropic Claude API | Modelo default: `claude-sonnet-5` (configurable) |
+| IA | Anthropic Claude API | Modelo default: `claude-sonnet-5-5` (configurable) |
 | WhatsApp | Zernio / Meta Cloud API | El usuario elige durante el setup |
 | Base de datos | SQLite (local) / PostgreSQL (prod) | Via SQLAlchemy |
 | Variables | python-dotenv | NUNCA hardcodear keys |
@@ -66,13 +66,13 @@ Dos dependencias que parecen opcionales y no lo son:
 
 ### 2.1 Modelo de Claude
 
-El modelo se elige con la variable `ANTHROPIC_MODEL`. Default: `claude-sonnet-5`.
+El modelo se elige con la variable `ANTHROPIC_MODEL`. Default: `claude-sonnet-5-5`.
 
 | Modelo | ID | Precio por millón de tokens | Cuándo usarlo |
 |---|---|---|---|
-| Claude Opus 5 | `claude-opus-5` | $5 entrada / $25 salida | El agente tiene que razonar sobre catálogos, agendas o reglas complicadas |
-| Claude Sonnet 5 | `claude-sonnet-5` | $3 / $15 | **Default.** El balance correcto para atención a clientes |
-| Claude Haiku 4.5 | `claude-haiku-4-5` | $1 / $5 | Solo preguntas frecuentes y respuestas cortas |
+| Claude Opus 5.5 | `claude-opus-5-5` | $4 entrada / $20 salida | El agente tiene que razonar sobre catálogos, agendas o reglas complicadas |
+| Claude Sonnet 5.5 | `claude-sonnet-5-5` | $2 / $10 | **Default.** El balance correcto para atención a clientes |
+| Claude Haiku 5.5 | `claude-haiku-5-5` | $0.10 / $0.50 | Solo preguntas frecuentes y respuestas cortas |
 
 Si el usuario no dice nada, usa el default. No cambies de modelo por tu cuenta para
 "ahorrar": es una decisión del dueño del negocio, no tuya.
@@ -85,7 +85,7 @@ AgentKit soporta dos formas de conectar con WhatsApp. El usuario elige una en la
 
 ### 3.1 Zernio — recomendado
 
-[Zernio](https://zernio.com) corre sobre la WhatsApp Cloud API de Meta y resuelve por vos
+[Zernio](https://zernio.link/enrique-rocha) corre sobre la WhatsApp Cloud API de Meta y resuelve por vos
 el Embedded Signup de la WhatsApp Business Account, el inbox unificado y los webhooks
 firmados. No hay que crear una app de Facebook ni pasar App Review.
 
@@ -318,7 +318,7 @@ PREGUNTA 7: ¿Tienes archivos con información de tu negocio?
 PREGUNTA 8: ¿Tienes tu Anthropic API Key?
             Si SÍ → "Compártela, la guardaré de forma segura en tu .env"
             Si NO → Guiar paso a paso:
-                     1. Ve a platform.anthropic.com
+                     1. Ve a platform.claude.com
                      2. Crea una cuenta o inicia sesión
                      3. Ve a Settings → API Keys
                      4. Crea una nueva key y cópiala
@@ -347,7 +347,7 @@ PREGUNTA 10: [Depende de la respuesta de PREGUNTA 9]
                 2. Webhook Secret (lo inventas tú, ej: "mi-agente-2026")
 
                 Si NO los tiene → Guiar paso a paso:
-                    1. Ve a zernio.com y crea tu cuenta (plan Free, sin tarjeta)
+                    1. Ve a https://zernio.link/enrique-rocha y crea tu cuenta (plan Free, sin tarjeta)
                     2. En el dashboard: Connections → Connect new → WhatsApp
                     3. Completa el Embedded Signup de Meta que se abre en la ventana
                        (eliges o creas tu WhatsApp Business Account y tu número)
@@ -1213,12 +1213,12 @@ logger = logging.getLogger("agentkit")
 client = AsyncAnthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # El modelo se cambia desde .env, sin tocar el codigo.
-#   claude-opus-5     el mas capaz             $5 / $25 por millon de tokens
-#   claude-sonnet-5   el balanceado (default)  $3 / $15
-#   claude-haiku-4-5  el mas barato y rapido   $1 / $5
+#   claude-opus-5-5   el mas capaz             $4 / $20 por millon de tokens
+#   claude-sonnet-5-5 el balanceado (default)  $2 / $10
+#   claude-haiku-5-5  el mas barato y rapido   $0.10 / $0.50
 # El "or" y no el default de os.getenv: una variable declarada vacia en el .env
 # devuelve "" y dejaria al agente sin modelo.
-MODELO = os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-5"
+MODELO = os.getenv("ANTHROPIC_MODEL") or "claude-sonnet-5-5"
 
 # Es un bot de respuestas cortas: con esfuerzo bajo contesta mas rapido y mas barato.
 # Dejalo vacio en el .env para no mandar el parametro.
@@ -1737,8 +1737,8 @@ Genera SOLO las variables del proveedor elegido. Las del otro no van, ni comenta
 
 # ── Anthropic ──────────────────────────────────────────────
 ANTHROPIC_API_KEY=sk-ant-...
-# claude-opus-5 | claude-sonnet-5 | claude-haiku-4-5
-ANTHROPIC_MODEL=claude-sonnet-5
+# claude-opus-5-5 | claude-sonnet-5-5 | claude-haiku-5-5
+ANTHROPIC_MODEL=claude-sonnet-5-5
 # Esfuerzo de razonamiento: low | medium | high. Vacio = no enviar el parametro.
 ANTHROPIC_EFFORT=low
 # Opcional, default 4096. El razonamiento interno cuenta contra este tope.
@@ -1957,7 +1957,7 @@ Solo ejecutar si el usuario confirma que quiere hacer deploy.
       rm -rf .git && git init
 
    Paso 2: Conecta con Railway
-      1. Ve a railway.app y crea una cuenta
+      1. Ve a railway.com y crea una cuenta
       2. Click en "New Project"
       3. Selecciona "Deploy from GitHub repo"
       4. Conecta tu cuenta de GitHub y selecciona el repo
@@ -1965,7 +1965,7 @@ Solo ejecutar si el usuario confirma que quiere hacer deploy.
    Paso 3: Variables de entorno
       En Railway → tu proyecto → Variables, agrega:
       - ANTHROPIC_API_KEY   = [tu key]
-      - ANTHROPIC_MODEL     = claude-sonnet-5
+      - ANTHROPIC_MODEL     = claude-sonnet-5-5
       - WHATSAPP_PROVIDER   = [zernio | meta]
       - ENVIRONMENT         = production
       - DATABASE_URL        = ${{Postgres.DATABASE_URL}}
@@ -2007,7 +2007,7 @@ Solo ejecutar si el usuario confirma que quiere hacer deploy.
    Paso 5: Configura el webhook
 
       Si ZERNIO:
-         2. Ve a zernio.com → dashboard → Webhooks → Create webhook
+         2. Ve al dashboard de Zernio → Webhooks → Create webhook
          3. URL: https://tu-app.up.railway.app/webhook
          4. Secret: el mismo valor que pusiste en ZERNIO_WEBHOOK_SECRET
          5. Eventos: marca "message.received" → Guardar
@@ -2125,7 +2125,7 @@ python3 scripts/audit.py
 ```env
 # ── Anthropic ─────────────────────────────────────────────
 ANTHROPIC_API_KEY=sk-ant-...
-ANTHROPIC_MODEL=claude-sonnet-5     # claude-opus-5 | claude-sonnet-5 | claude-haiku-4-5
+ANTHROPIC_MODEL=claude-sonnet-5-5   # claude-opus-5-5 | claude-sonnet-5-5 | claude-haiku-5-5
 ANTHROPIC_EFFORT=low                # low | medium | high — vacio para no enviarlo
 # ANTHROPIC_MAX_TOKENS=4096         # opcional, default 4096
 

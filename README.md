@@ -140,7 +140,7 @@ Eliges uno de los dos durante el setup.
 | Probar sin número propio | Sí, número de pruebas compartido: 50 mensajes cada 24 h, gratis | Sí, Meta da un número de prueba, pero antes hay que crear la app |
 | Para quién | **Recomendado.** Casi todo el mundo | Si ya tienes tu app de Meta armada |
 
-**Zernio** ([zernio.com](https://zernio.com)) es el camino corto: creas la cuenta, conectas
+**Zernio** ([crea tu cuenta aquí](https://zernio.link/enrique-rocha)) es el camino corto: creas la cuenta, conectas
 tu WhatsApp Business desde el dashboard, copias la API key y listo. Si todavía no tienes
 número de WhatsApp Business, su sandbox te deja ver el agente funcionando hoy mismo —
 respondes un mensaje desde tu celular y quedas activado.
@@ -225,11 +225,11 @@ claude   # solo la primera vez, para autenticarte
 ```
 
 **3. API key de Anthropic**
-[platform.anthropic.com](https://platform.anthropic.com/settings/keys) → Settings →
+[platform.claude.com](https://platform.claude.com/settings/keys) → Settings →
 API Keys → Create Key. Empieza con `sk-ant-...`.
 
 **4. Una cuenta de WhatsApp API**
-[Zernio](https://zernio.com) (recomendado) o
+[Zernio](https://zernio.link/enrique-rocha) (recomendado) o
 [Meta Cloud API](https://developers.facebook.com).
 
 ---
@@ -243,7 +243,7 @@ reales en vez de un "es súper barato".
 |---|---|
 | AgentKit | Gratis, MIT |
 | Zernio | Las primeras 2 cuentas conectadas son gratis, sin tarjeta. Si conectas tu propio número de WhatsApp Business, ahí termina el costo. Si necesitas que Zernio te dé un número, son entre $3 y $21 al mes según el país |
-| Meta Cloud API | Las conversaciones que abre el cliente son gratis. Solo pagas las que inicias tú con plantilla |
+| Meta Cloud API | Desde el 1 de octubre de 2026 Meta cobra cada respuesta de servicio entregada, con 1.000 gratis al mes por número. Las plantillas que mandas tú primero se cobran aparte, por país. Tarifas en [la página de precios de Meta](https://developers.facebook.com/docs/whatsapp/pricing/) |
 | Claude API | Por uso. Ver el cálculo de abajo |
 | Railway | Ya no hay plan gratuito de verdad: arrancas con $5 de crédito de prueba y después el plan Hobby son $5 al mes |
 
@@ -253,9 +253,9 @@ Se cambia con la variable `ANTHROPIC_MODEL`, sin tocar código.
 
 | Modelo | ID | Precio por millón de tokens | Cuándo usarlo |
 |---|---|---|---|
-| Claude Opus 5 | `claude-opus-5` | $5 entrada / $25 salida | El agente razona sobre catálogos, agendas o reglas complejas |
-| **Claude Sonnet 5** | `claude-sonnet-5` | $3 / $15 | **Default.** El balance correcto para atención a clientes |
-| Claude Haiku 4.5 | `claude-haiku-4-5` | $1 / $5 | Solo preguntas frecuentes y respuestas cortas |
+| Claude Opus 5.5 | `claude-opus-5-5` | $4 entrada / $20 salida | El agente razona sobre catálogos, agendas o reglas complejas |
+| **Claude Sonnet 5.5** | `claude-sonnet-5-5` | $2 / $10 | **Default.** El balance correcto para atención a clientes |
+| Claude Haiku 5.5 | `claude-haiku-5-5` | $0.10 / $0.50 | Solo preguntas frecuentes y respuestas cortas |
 
 **El cálculo, sin trampa.** Un chatbot no cobra por mensaje: cobra por token, y en cada turno
 se le vuelve a mandar a Claude el system prompt completo más el historial de la conversación.
@@ -266,9 +266,9 @@ Una conversación de 8 mensajes ida y vuelta, con un system prompt de unos 1.500
 
 | Modelo | Por conversación | 300 al mes | 1.000 al mes |
 |---|---|---|---|
-| Claude Opus 5 | ~$0.11 | ~$33 | ~$110 |
-| Claude Sonnet 5 | ~$0.07 | ~$20 | ~$66 |
-| Claude Haiku 4.5 | ~$0.02 | ~$7 | ~$22 |
+| Claude Opus 5.5 | ~$0.09 | ~$26 | ~$88 |
+| Claude Sonnet 5.5 | ~$0.04 | ~$13 | ~$44 |
+| Claude Haiku 5.5 | ~$0.002 | ~$0.70 | ~$2.20 |
 
 Son estimaciones: si tu system prompt es más largo (un menú grande, un catálogo entero),
 sube proporcionalmente. La forma más efectiva de bajarlo no es cambiar de modelo, es no
@@ -335,7 +335,7 @@ claude "Quiero migrar de Zernio a Meta Cloud API."
 
 | Componente | Tecnología | Para qué sirve |
 |---|---|---|
-| IA | Claude (`claude-sonnet-5` por default) | Genera las respuestas |
+| IA | Claude (`claude-sonnet-5-5` por default) | Genera las respuestas |
 | Servidor | FastAPI + Uvicorn | Recibe los webhooks de WhatsApp |
 | WhatsApp | Zernio / Meta Cloud API | Conecta con WhatsApp — tú eliges |
 | Base de datos | SQLite local / PostgreSQL en producción | Historial y deduplicación |
