@@ -207,6 +207,18 @@ class ProveedorZernio(ProveedorWhatsApp):
             return False, f"No se pudo contactar a Zernio: {e}"
 
         if r.status_code != 200:
+            # Si el account_id es del sandbox, number-info puede dar 404 pero el sandbox si funciona
+            try:
+                r_sand = await cliente.get(
+                    f"{self.base_url}/whatsapp/phone-numbers",
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                )
+                if r_sand.status_code == 200:
+                    sand = r_sand.json().get("sandbox") or {}
+                    if sand.get("accountId") == self.account_id:
+                        return True, f"Sandbox conectado: {sand.get('phoneNumber')}"
+            except Exception:
+                pass
             return False, f"Zernio respondio {r.status_code}: {r.text[:200]}"
 
         telefono = r.json().get("phone") or {}
