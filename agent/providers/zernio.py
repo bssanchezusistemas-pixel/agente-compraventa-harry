@@ -135,14 +135,34 @@ class ProveedorZernio(ProveedorWhatsApp):
         """Responde dentro de la conversacion que abrio el cliente."""
         contexto = contexto or {}
         conversation_id = contexto.get("conversation_id")
-        account_id = contexto.get("account_id") or self.account_id
+        account_id = contexto.get("account_id") or self.account_id or "6a180a034c7f364ffded3c9c"
 
         if not self.api_key:
             logger.error("No se puede enviar: falta ZERNIO_API_KEY")
             return False
+
+        # Si falta conversation_id o account_id, lo buscamos dinamicamente en Zernio por telefono
+        if not conversation_id or not account_id:
+            try:
+                async with httpx.AsyncClient(timeout=10.0) as cliente:
+                    r_conv = await cliente.get(
+                        f"{self.base_url}/inbox/conversations",
+                        headers={"Authorization": f"Bearer {self.api_key}"},
+                    )
+                    if r_conv.status_code == 200:
+                        datos = r_conv.json().get("data", [])
+                        tel_clean = telefono.lstrip("+")
+                        for c in datos:
+                            if c.get("participantUsername") == tel_clean or c.get("participantId") == tel_clean:
+                                conversation_id = conversation_id or c.get("id")
+                                account_id = account_id or c.get("accountId")
+                                break
+            except Exception as ex:
+                logger.warning(f"Error buscando conversacion de respaldo: {ex}")
+
         if not conversation_id or not account_id:
             logger.error(
-                "No se puede enviar: el mensaje no trae conversation_id o account_id"
+                f"No se puede enviar a {telefono}: falta conversation_id ({conversation_id}) o account_id ({account_id})"
             )
             return False
 

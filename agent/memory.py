@@ -21,11 +21,13 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 load_dotenv()
 logger = logging.getLogger("agentkit")
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./agentkit.db")
+DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
 
-# Railway entrega la URL de PostgreSQL con el esquema "postgresql://" (o "postgres://").
-# SQLAlchemy en modo asincrono necesita que el driver sea explicito.
-if DATABASE_URL.startswith("postgresql://"):
+# Si no esta definida o viene como plantilla no resuelta (ej. ${{Postgres.DATABASE_URL}} en Render),
+# usamos SQLite local para que nunca falle el arranque ni el procesamiento.
+if not DATABASE_URL or "${{" in DATABASE_URL or not any(DATABASE_URL.startswith(p) for p in ("sqlite", "postgres")):
+    DATABASE_URL = "sqlite+aiosqlite:///./agentkit.db"
+elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 elif DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
